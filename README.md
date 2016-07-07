@@ -4,4 +4,7 @@
 
 ## Dependencies ##
 
-- JSch
+- Java 7+
+- [JSch (with JZlib)][jsch]
+
+[jsch]: http://www.jcraft.com/jsch/
