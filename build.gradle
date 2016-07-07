@@ -18,6 +18,22 @@ task wrapper(type: Wrapper) {
 	distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
+ext {
+	jschVersion = "0.1.53"
+	jzlibVersion = "1.1.3"
+	slf4jVersion = "1.7.16"
+	logbackVersion = "1.1.3"
+	mockitoVersion = "1.10.19"
+}
+
 dependencies {
+	compile "org.slf4j:slf4j-api:${slf4jVersion}"
+
+	compile "com.jcraft:jsch:${jschVersion}"
+	runtime "com.jcraft:jzlib:${jzlibVersion}"
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
+	testCompile("org.mockito:mockito-core:${mockitoVersion}")
+
+	testRuntime	"ch.qos.logback:logback-classic:${logbackVersion}"
 }
