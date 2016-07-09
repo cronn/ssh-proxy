@@ -2,7 +2,11 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-version = '1.0'
+if (System.env.BUILD_NUMBER) {
+	version = "1.0b" + System.env.BUILD_NUMBER
+} else {
+	version = "1.0-SNAPSHOT"
+}
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
