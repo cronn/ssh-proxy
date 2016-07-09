@@ -2,12 +2,22 @@ package de.cronn.proxy.ssh.util;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
 
 public class UtilsTest {
+
+	@Test
+	public void testConstructorIsPrivate() throws Exception {
+		Constructor<?> constructor = Utils.class.getDeclaredConstructor();
+		assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+		constructor.setAccessible(true);
+		constructor.newInstance();
+	}
 
 	@Test
 	public void testJoin() throws Exception {
