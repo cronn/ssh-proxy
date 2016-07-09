@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: "org.sonarqube"
+apply plugin: "jacoco"
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
@@ -27,6 +28,10 @@ buildscript {
 	dependencies {
 		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.0.1"
 	}
+}
+
+jacoco {
+	toolVersion = "0.7.7.201606060606"
 }
 
 task wrapper(type: Wrapper) {
