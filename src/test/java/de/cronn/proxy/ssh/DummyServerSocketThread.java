@@ -35,7 +35,7 @@ public class DummyServerSocketThread extends Thread {
 				log.info("got incoming connection");
 				serverSocket.close();
 				OutputStream outputStream = socket.getOutputStream();
-				outputStream.write(textToSend.getBytes(transferCharset));
+				outputStream.write((textToSend + "\r\n").getBytes(transferCharset));
 				outputStream.flush();
 				log.info("wrote '{}' to socket", textToSend);
 			}

@@ -2,8 +2,10 @@ package de.cronn.proxy.ssh;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -83,7 +85,7 @@ public class SshProxyTest {
 			try (Socket s = new Socket(SshProxy.LOCALHOST, port);
 				 InputStream is = s.getInputStream()) {
 				log.info("connected to port: {}", port);
-				receivedText = readText(is);
+				receivedText = readLine(is);
 			}
 			assertEquals(TEST_TEXT, receivedText);
 		} finally {
@@ -99,10 +101,10 @@ public class SshProxyTest {
 		}
 	}
 
-	private String readText(InputStream is) throws IOException {
-		byte[] buffer = new byte[256];
-		int numRead = is.read(buffer);
-		return new String(buffer, 0, numRead, TRANSFER_CHARSET);
+	private String readLine(InputStream is) throws IOException {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, TRANSFER_CHARSET))) {
+			return reader.readLine();
+		}
 	}
 
 	private SshServer setUpSshServer() throws IOException {
