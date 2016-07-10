@@ -103,7 +103,7 @@ public class SshProxyTest {
 
 	private String readLine(InputStream is) throws IOException {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, TRANSFER_CHARSET))) {
-			return reader.readLine();
+			return reader.readLine().trim();
 		}
 	}
 
