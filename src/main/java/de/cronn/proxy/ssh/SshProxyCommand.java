@@ -31,7 +31,7 @@ public class SshProxyCommand {
 		Assert.isTrue(matcher.matches(),
 			"Illegal ProxyCommand configured for host " + sshTunnelHost + ": " //
 				+ proxyCommandConfig + "." //
-				+ " Please check your SSH configuration in " + SshConfiguration.LOCAL_SSH_CONFIG_PATH);
+				+ " Please check your SSH configuration in " + SshConfiguration.getLocalSshConfigPath());
 
 		log.debug("[{}] emulating proxy command: {}", sshTunnelHost, proxyCommandConfig);
 

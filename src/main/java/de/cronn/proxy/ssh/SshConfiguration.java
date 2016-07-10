@@ -30,13 +30,6 @@ public class SshConfiguration {
 
 	private static final Logger log = LoggerFactory.getLogger(SshConfiguration.class);
 
-	private static final String USER_HOME = System.getProperty("user.home");
-
-	private static final Path SSH_HOME = Paths.get(USER_HOME, ".ssh");
-	protected static final Path LOCAL_SSH_CONFIG_PATH = SSH_HOME.resolve("config");
-	private static final Path LOCAL_SSH_KNOWN_HOSTS_PATH = SSH_HOME.resolve("known_hosts");
-	private static final Path DEFAULT_SSH_KEY_PATH = SSH_HOME.resolve("id_rsa");
-
 	private static final String SSH_CONFIG_KEY_IDENTITY_FILE = "IdentityFile";
 	private static final String SSH_CONFIG_KEY_PROXY_COMMAND = "ProxyCommand";
 
@@ -53,13 +46,33 @@ public class SshConfiguration {
 		this.configRepository = configRepository;
 		jsch.setConfigRepository(this.configRepository);
 
-		Assert.isTrue(Files.isRegularFile(LOCAL_SSH_KNOWN_HOSTS_PATH), LOCAL_SSH_KNOWN_HOSTS_PATH + " does not exist");
-		jsch.setKnownHosts(LOCAL_SSH_KNOWN_HOSTS_PATH.toString());
+		Assert.isTrue(Files.isRegularFile(getLocalSshKnownHostsPath()), getLocalSshKnownHostsPath() + " does not exist");
+		jsch.setKnownHosts(getLocalSshKnownHostsPath().toString());
 	}
 
 	public static SshConfiguration getConfiguration() throws IOException, JSchException {
-		Assert.isTrue(Files.isRegularFile(LOCAL_SSH_CONFIG_PATH), LOCAL_SSH_CONFIG_PATH + " does not exist");
-		return new SshConfiguration(OpenSSHConfig.parseFile(LOCAL_SSH_CONFIG_PATH.toString()));
+		Assert.isTrue(Files.isRegularFile(getLocalSshConfigPath()), getLocalSshConfigPath() + " does not exist");
+		return new SshConfiguration(OpenSSHConfig.parseFile(getLocalSshConfigPath().toString()));
+	}
+
+	private static String getUserHome() {
+		return System.getProperty("user.home");
+	}
+
+	private static Path getSshHome() {
+		return Paths.get(getUserHome(), ".ssh");
+	}
+
+	public static Path getLocalSshConfigPath() {
+		return getSshHome().resolve("config");
+	}
+
+	private static Path getLocalSshKnownHostsPath() {
+		return getSshHome().resolve("known_hosts");
+	}
+
+	private static Path getDefaultSshKeyPath() {
+		return getSshHome().resolve("id_rsa");
 	}
 
 	private Config getHostConfig(String host) {
@@ -80,7 +93,7 @@ public class SshConfiguration {
 		Config hostConfig = getHostConfig(host);
 		String identityFile = hostConfig.getValue(SSH_CONFIG_KEY_IDENTITY_FILE);
 		if (identityFile == null) {
-			identityFile = DEFAULT_SSH_KEY_PATH.toString();
+			identityFile = getDefaultSshKeyPath().toString();
 		}
 		log.debug("using SSH key file {}", identityFile);
 		jsch.addIdentity(identityFile);

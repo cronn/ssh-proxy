@@ -26,6 +26,7 @@ build
 .settings
 .metadata
 bin
+classes
 .recommenders/
 
 # Jetbrains IDEA

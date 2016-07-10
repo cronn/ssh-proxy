@@ -43,6 +43,8 @@ ext {
 	jschVersion = "0.1.53"
 	jzlibVersion = "1.1.3"
 	slf4jVersion = "1.7.16"
+	apacheSshdVersion = "1.2.0"
+	junitVersion = "4.12"
 	logbackVersion = "1.1.3"
 	mockitoVersion = "1.10.19"
 }
@@ -53,8 +55,13 @@ dependencies {
 	compile "com.jcraft:jsch:${jschVersion}"
 	runtime "com.jcraft:jzlib:${jzlibVersion}"
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-	testCompile("org.mockito:mockito-core:${mockitoVersion}")
+	testCompile "junit:junit:${junitVersion}"
+	testCompile "org.mockito:mockito-core:${mockitoVersion}"
+	testCompile ("org.apache.sshd:apache-sshd:${apacheSshdVersion}") {
+		exclude group: 'org.slf4j', module: 'slf4j-jdk14'
+	}
 
 	testRuntime	"ch.qos.logback:logback-classic:${logbackVersion}"
+	testRuntime "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+
 }
