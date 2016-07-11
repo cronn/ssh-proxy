@@ -1,8 +1,16 @@
-apply plugin: 'java'
-apply plugin: "org.sonarqube"
-apply plugin: "jacoco"
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+plugins {
+	id 'java'
+	id 'org.sonarqube' version "2.0.1"
+	id 'jacoco'
+	id 'eclipse'
+	id 'idea'
+
+	id 'maven'
+	id 'maven-publish'
+	id 'com.jfrog.bintray' version "1.7"
+}
+
+group = 'de.cronn'
 
 if (System.env.BUILD_NUMBER) {
 	version = "1.0b" + System.env.BUILD_NUMBER
@@ -19,17 +27,6 @@ repositories {
     mavenCentral()
 }
 
-buildscript {
-	repositories {
-		maven {
-			url "https://plugins.gradle.org/m2/"
-		}
-	}
-	dependencies {
-		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.0.1"
-	}
-}
-
 jacoco {
 	toolVersion = "0.7.7.201606060606"
 }
@@ -37,6 +34,50 @@ jacoco {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 	distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+artifacts {
+	archives sourcesJar, javadocJar
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+		}
+	}
+}
+
+bintray {
+	user = bintrayUser
+	key = bintrayKey
+	publications = ['mavenJava']
+	dryRun = false
+	pkg {
+		repo = 'maven'
+		name = rootProject.name
+		userOrg = 'cronn'
+		licenses = ['Apache-2.0']
+		websiteUrl = 'https://github.com/cronn-de/ssh-proxy'
+		issueTrackerUrl = 'https://github.com/cronn-de/ssh-proxy/issues'
+		vcsUrl = 'https://github.com/cronn-de/ssh-proxy.git'
+		version {
+			name = project.version
+			released = new Date()
+		}
+	}
 }
 
 ext {
