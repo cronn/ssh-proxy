@@ -46,6 +46,7 @@ public class SshProxy implements Closeable {
 	public int connect(String sshTunnelHost, String host, int port) {
 		Assert.notNull(sshTunnelHost, "sshTunnelHost must not be null");
 		Assert.notNull(host, "host must not be null");
+		Assert.isTrue(port > 0, "illegal port: " + port);
 
 		log.debug("tunneling to {}:{} via {}", host, port, sshTunnelHost);
 
@@ -72,7 +73,7 @@ public class SshProxy implements Closeable {
 
 			return addLocalPortForwarding(sshTunnelHost, jumpHostSession, host, port);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to create SSH tunnel", e);
+			throw new RuntimeException("Failed to create SSH tunnel to " + host + " via " + sshTunnelHost, e);
 		}
 	}
 
@@ -87,7 +88,11 @@ public class SshProxy implements Closeable {
 		Session jumpHostSession = sshConfiguration.openSession(jumpHost);
 		sshSessions.add(jumpHostSession);
 		jumpHostSession.setTimeout(timeoutMillis);
-		jumpHostSession.connect(timeoutMillis);
+		try {
+			jumpHostSession.connect(timeoutMillis);
+		} catch (JSchException e) {
+			throw new RuntimeException("Failed to connect to " + targetHost + " via " + jumpHost);
+		}
 
 		log.debug("[{}] connected", jumpHost);
 
