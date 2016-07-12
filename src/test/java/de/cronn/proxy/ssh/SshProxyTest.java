@@ -40,6 +40,7 @@ public class SshProxyTest {
 	private static final String CONFIG_FILENAME = "config";
 	private static final Path TEST_RESOURCES = Paths.get("src", "test", "resources");
 	private static final Path SERVER_RSA_KEY = TEST_RESOURCES.resolve("server-rsa.key");
+	private static final Path SERVER_ECDSA_KEY = TEST_RESOURCES.resolve("server-ecdsa.key");
 
 	private static final long TEST_TIMEOUT_MILLIS = 30_000L;
 
@@ -72,7 +73,6 @@ public class SshProxyTest {
 
 		appendToSshFile(CONFIG_FILENAME, "");
 		appendToSshFile(KNOWN_HOSTS_FILENAME, "");
-		appendToSshFile(KNOWN_HOSTS_FILENAME, "localhost ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDL8360Wxcgo33sggS0bSid0u7Ad4XFig8/e0UfD5l02x/w2DRJuqJow4SiDfi9jvD8p3lu7To7b/oGH/c/vsK9j35ICG0eJ/bbnQDuHROBAnbAC6PXN+/XX2F9s48KlOC5dQXrGYyYhoozW67yoHTooisZSzF/iyPdNat64rM0+ZO3dV6eEQ0FItYO632YcSiBRE7YZe9rP7ne50xaltKgrAmHRDRo+tjIcykrlcZFG1Bp/ct9Ejs2DQDsFOZRCmFbag0pQxxbkA1U6z7O3qwhhDWcJz2ZHDHK8DUkgHdX+Hbp7LxBWEaCiU8cL+S6rmCpNsui9NT/XeoLuXQ4J8jX\n");
 	}
 
 	@After
@@ -83,6 +83,30 @@ public class SshProxyTest {
 	@Test(timeout = TEST_TIMEOUT_MILLIS)
 	public void testSingleHop() throws Exception {
 		SshServer sshServer = setUpSshServer();
+		int sshServerPort = sshServer.getPort();
+
+		String hostConfigName = "localhost-" + sshServerPort;
+		appendToSshFile(CONFIG_FILENAME, "Host " + hostConfigName + "\n\tHostName localhost\n\tPort " + sshServerPort + "\n\n");
+
+		try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
+			SshProxy sshProxy = new SshProxy()) {
+			int port = sshProxy.connect(hostConfigName, "localhost", dummyServerSocketThread.getPort());
+
+			final String receivedText;
+			try (Socket s = new Socket(SshProxy.LOCALHOST, port);
+				 InputStream is = s.getInputStream()) {
+				log.info("connected to port: {}", port);
+				receivedText = readLine(is);
+			}
+			assertEquals(TEST_TEXT, receivedText);
+		} finally {
+			tryStop(sshServer);
+		}
+	}
+
+	@Test(timeout = TEST_TIMEOUT_MILLIS)
+	public void testSingleHop_EcDsaServer() throws Exception {
+		SshServer sshServer = setUpSshServer(KeyUtils.EC_ALGORITHM);
 		int sshServerPort = sshServer.getPort();
 
 		String hostConfigName = "localhost-" + sshServerPort;
@@ -146,6 +170,8 @@ public class SshProxyTest {
 
 	@Test(timeout = TEST_TIMEOUT_MILLIS)
 	public void testSingleHop_ConnectionRefused() throws Exception {
+		SshServer sshServer = setUpSshServer();
+		sshServer.stop();
 		try (SshProxy sshProxy = new SshProxy()) {
 			sshProxy.connect("localhost", "targethost", 1234);
 			fail("RuntimeException expected");
@@ -192,10 +218,15 @@ public class SshProxyTest {
 		sshServer.setPort(0);
 		AbstractGeneratorHostKeyProvider hostKeyProvider = SecurityUtils.createGeneratorHostKeyProvider(getServerKeyFile(algorithm));
 		hostKeyProvider.setAlgorithm(algorithm);
+		if (algorithm.equals(KeyUtils.EC_ALGORITHM)) {
+			hostKeyProvider.setKeySize(256);
+		}
 		sshServer.setKeyPairProvider(hostKeyProvider);
 
 		sshServer.setPublickeyAuthenticator(AcceptAllPublickeyAuthenticator.INSTANCE);
 		sshServer.setTcpipForwardingFilter(AcceptAllForwardingFilter.INSTANCE);
+
+		writeFingerprintToKnownHosts(algorithm);
 
 		sshServer.start();
 
@@ -205,10 +236,25 @@ public class SshProxyTest {
 		return sshServer;
 	}
 
+	private void writeFingerprintToKnownHosts(String algorithm) throws IOException {
+		switch (algorithm) {
+			case KeyUtils.RSA_ALGORITHM:
+				appendToSshFile(KNOWN_HOSTS_FILENAME, "localhost ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDL8360Wxcgo33sggS0bSid0u7Ad4XFig8/e0UfD5l02x/w2DRJuqJow4SiDfi9jvD8p3lu7To7b/oGH/c/vsK9j35ICG0eJ/bbnQDuHROBAnbAC6PXN+/XX2F9s48KlOC5dQXrGYyYhoozW67yoHTooisZSzF/iyPdNat64rM0+ZO3dV6eEQ0FItYO632YcSiBRE7YZe9rP7ne50xaltKgrAmHRDRo+tjIcykrlcZFG1Bp/ct9Ejs2DQDsFOZRCmFbag0pQxxbkA1U6z7O3qwhhDWcJz2ZHDHK8DUkgHdX+Hbp7LxBWEaCiU8cL+S6rmCpNsui9NT/XeoLuXQ4J8jX\n");
+				break;
+			case KeyUtils.EC_ALGORITHM:
+				appendToSshFile(KNOWN_HOSTS_FILENAME, "localhost ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCH+0xjLYNGoqVGlD4VtKHF1Tig2/Y76BxVld88bYAaRV4ojJni62vIYMKqk+FMZhL1lcQ/VQTvIeLMnYk+grKo=\n");
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
+		}
+	}
+
 	private static Path getServerKeyFile(String algorithm) {
 		switch (algorithm) {
 			case KeyUtils.RSA_ALGORITHM:
 				return SERVER_RSA_KEY;
+			case KeyUtils.EC_ALGORITHM:
+				return SERVER_ECDSA_KEY;
 			default:
 				throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
 		}
