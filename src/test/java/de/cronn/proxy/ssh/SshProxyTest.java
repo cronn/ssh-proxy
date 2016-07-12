@@ -16,10 +16,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
 import org.apache.sshd.common.config.keys.KeyUtils;
+import org.apache.sshd.common.util.SecurityUtils;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class SshProxyTest {
 	private static final String KNOWN_HOSTS_FILENAME = "known_hosts";
 	private static final String CONFIG_FILENAME = "config";
 	private static final Path TEST_RESOURCES = Paths.get("src", "test", "resources");
-	private static final Path SERVER_HOST_KEY = TEST_RESOURCES.resolve("server-host.key");
+	private static final Path SERVER_RSA_KEY = TEST_RESOURCES.resolve("server-rsa.key");
 
 	private static final long TEST_TIMEOUT_MILLIS = 30_000L;
 
@@ -49,6 +50,11 @@ public class SshProxyTest {
 	private Path dotSsh;
 
 	private static final String TEST_TEXT = "Hello World";
+
+	@Before
+	public void checkBouncyCastleIsRegistered() {
+		assertTrue("BouncyCastle is registered", SecurityUtils.isBouncyCastleRegistered());
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -65,7 +71,8 @@ public class SshProxyTest {
 		}
 
 		appendToSshFile(CONFIG_FILENAME, "");
-		appendToSshFile(KNOWN_HOSTS_FILENAME, "localhost ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7inSl9nmddrnG8edpFzocy3fDzLOkUCHFjVSu/4XTOsGGz2U3YpxhHqORsv7EjWydHO6d1kmkca77iIakAqHp8P9/owgqhFCQYNIxzebgD0HBt/Jw2Lx857jYjlJhbbsZVLGJpyZASK88Tr6jqQ4P66HO+vHwkTfz3XVmgt70u65bXKZpjeu7hiqvAvvAthdnK+WR5EaA9SmpTWx4+XPMac7PEePOwQszBoUdkNh/S/iDS/W/CnKs9TIjjGuOouDc5LSE0BiD736PoVJUL/JsI811BkfJ9T26WshghGplJpKVSKYlF/qPf4AvYz22IPKCsZ0tGOUt8bBVG8DmZyZP\n");
+		appendToSshFile(KNOWN_HOSTS_FILENAME, "");
+		appendToSshFile(KNOWN_HOSTS_FILENAME, "localhost ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDL8360Wxcgo33sggS0bSid0u7Ad4XFig8/e0UfD5l02x/w2DRJuqJow4SiDfi9jvD8p3lu7To7b/oGH/c/vsK9j35ICG0eJ/bbnQDuHROBAnbAC6PXN+/XX2F9s48KlOC5dQXrGYyYhoozW67yoHTooisZSzF/iyPdNat64rM0+ZO3dV6eEQ0FItYO632YcSiBRE7YZe9rP7ne50xaltKgrAmHRDRo+tjIcykrlcZFG1Bp/ct9Ejs2DQDsFOZRCmFbag0pQxxbkA1U6z7O3qwhhDWcJz2ZHDHK8DUkgHdX+Hbp7LxBWEaCiU8cL+S6rmCpNsui9NT/XeoLuXQ4J8jX\n");
 	}
 
 	@After
@@ -177,11 +184,15 @@ public class SshProxyTest {
 	}
 
 	private SshServer setUpSshServer() throws IOException {
+		return setUpSshServer(KeyUtils.RSA_ALGORITHM);
+	}
+
+	private SshServer setUpSshServer(String algorithm) throws IOException {
 		SshServer sshServer = SshServer.setUpDefaultServer();
 		sshServer.setPort(0);
-		SimpleGeneratorHostKeyProvider keyPairProvider = new SimpleGeneratorHostKeyProvider(SERVER_HOST_KEY);
-		keyPairProvider.setAlgorithm(KeyUtils.RSA_ALGORITHM);
-		sshServer.setKeyPairProvider(keyPairProvider);
+		AbstractGeneratorHostKeyProvider hostKeyProvider = SecurityUtils.createGeneratorHostKeyProvider(getServerKeyFile(algorithm));
+		hostKeyProvider.setAlgorithm(algorithm);
+		sshServer.setKeyPairProvider(hostKeyProvider);
 
 		sshServer.setPublickeyAuthenticator(AcceptAllPublickeyAuthenticator.INSTANCE);
 		sshServer.setTcpipForwardingFilter(AcceptAllForwardingFilter.INSTANCE);
@@ -192,6 +203,15 @@ public class SshProxyTest {
 		assertTrue(sshServerPort > 0);
 
 		return sshServer;
+	}
+
+	private static Path getServerKeyFile(String algorithm) {
+		switch (algorithm) {
+			case KeyUtils.RSA_ALGORITHM:
+				return SERVER_RSA_KEY;
+			default:
+				throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
+		}
 	}
 
 	private void appendToSshFile(String filename, String text) throws IOException {
