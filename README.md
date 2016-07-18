@@ -2,7 +2,9 @@
 
 # SSH Proxy #
 
-A pure Java implementation to tunnel to TCP endpoints through SSH.
+A pure Java implementation to tunnel to TCP endpoints through SSH. It is an
+abstraction above [JSch][jsch] that is able to understand more sophisticated
+OpenSSH configurations which involve multiple hops to reach a target host.
 
 ## Usage ##
 Add the following Maven dependency to your project:
@@ -17,10 +19,25 @@ Add the following Maven dependency to your project:
 
 ### Example ###
 
+```
+# cat ~/.ssh/config
+
+Host jumpHost1
+    User my-user
+    HostName jumphost1.my.domain
+
+Host jumpHost2
+    User other-user
+    ProxyCommand ssh -q -W %h:%p jumpHost1
+
+Host targetHost
+    ProxyCommand ssh -q -W %h:%p jumpHost2
+```
+
 ```java
 try (SshProxy sshProxy = new SshProxy()) {
     int targetPort = 1234;
-    int port = sshProxy.connect("jumpHost", "targetHost", targetPort);
+    int port = sshProxy.connect("jumpHost2", "targetHost", targetPort);
     try (Socket s = new Socket(SshProxy.LOCALHOST, port)) {
         OutputStream out = s.getOutputStream();
         InputStream in = s.getInputStream();
@@ -28,8 +45,6 @@ try (SshProxy sshProxy = new SshProxy()) {
     }
 }
 ```
-
-
 
 ## Dependencies ##
 
