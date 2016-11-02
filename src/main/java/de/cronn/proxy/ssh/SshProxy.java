@@ -91,6 +91,7 @@ public class SshProxy implements Closeable {
 		try {
 			jumpHostSession.connect(timeoutMillis);
 		} catch (JSchException e) {
+			log.debug("Failed to connect to {} via {}", targetHost, jumpHost, e);
 			throw new RuntimeException("Failed to connect to " + targetHost + " via " + jumpHost);
 		}
 
