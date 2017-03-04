@@ -38,6 +38,10 @@ jacoco {
 	toolVersion = "0.7.7.201606060606"
 }
 
+tasks.withType(JavaCompile) {
+	options.incremental = true
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '3.4.1'
 	distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
