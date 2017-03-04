@@ -1,6 +1,12 @@
+buildscript {
+	dependencies {
+		def sonarqubeVersion = JavaVersion.current().java7 ? "2.0.1" : "2.2.1"
+		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:$sonarqubeVersion"
+	}
+}
+
 plugins {
 	id 'java'
-	id 'org.sonarqube' version "2.2"
 	id 'jacoco'
 	id 'eclipse'
 	id 'idea'
@@ -9,6 +15,7 @@ plugins {
 	id 'maven-publish'
 	id 'com.jfrog.bintray' version "1.7"
 }
+apply plugin: "org.sonarqube"
 
 group = 'de.cronn'
 
