@@ -129,6 +129,30 @@ public class SshProxyTest {
 	}
 
 	@Test(timeout = TEST_TIMEOUT_MILLIS)
+	public void testSingleHopWithLocalPort() throws Exception {
+		SshServer sshServer = setUpSshServer();
+		int sshServerPort = sshServer.getPort();
+
+		String hostConfigName = "localhost-" + sshServerPort;
+		appendToSshFile(CONFIG_FILENAME, "Host " + hostConfigName + "\n\tHostName localhost\n\tPort " + sshServerPort + "\n\n");
+
+		try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
+			SshProxy sshProxy = new SshProxy()) {
+			int port = sshProxy.connect(hostConfigName, "localhost", dummyServerSocketThread.getPort(), 2345);
+
+			final String receivedText;
+			try (Socket s = new Socket(SshProxy.LOCALHOST, port);
+				 InputStream is = s.getInputStream()) {
+				log.info("connected to port: {}", port);
+				receivedText = readLine(is);
+			}
+			assertEquals(TEST_TEXT, receivedText);
+		} finally {
+			tryStop(sshServer);
+		}
+	}
+
+	@Test(timeout = TEST_TIMEOUT_MILLIS)
 	public void testTwoHops() throws Exception {
 		SshServer firstSshServer = setUpSshServer();
 		int firstServerPort = firstSshServer.getPort();
@@ -189,6 +213,16 @@ public class SshProxyTest {
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
 			assertEquals("illegal port: 0", e.getMessage());
+		}
+	}
+
+	@Test(timeout = TEST_TIMEOUT_MILLIS)
+	public void testSingleHop_IllegalLocalPort() throws Exception {
+		try (SshProxy sshProxy = new SshProxy()) {
+			sshProxy.connect("localhost", "targethost", 1234, -1);
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertEquals("illegal local port: -1", e.getMessage());
 		}
 	}
 

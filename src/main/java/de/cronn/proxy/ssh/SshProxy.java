@@ -51,6 +51,7 @@ public class SshProxy implements Closeable {
 		Assert.notNull(sshTunnelHost, "sshTunnelHost must not be null");
 		Assert.notNull(host, "host must not be null");
 		Assert.isTrue(port > 0, "illegal port: " + port);
+		Assert.isTrue(localPort >= 0, "illegal local port: " + localPort);
 
 		log.debug("tunneling to {}:{} via {}", host, port, sshTunnelHost);
 
