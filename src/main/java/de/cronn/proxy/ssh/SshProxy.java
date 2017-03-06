@@ -44,9 +44,14 @@ public class SshProxy implements Closeable {
 	}
 
 	public int connect(String sshTunnelHost, String host, int port) {
+		return connect(sshTunnelHost, host, port, 0);
+	}
+
+	public int connect(String sshTunnelHost, String host, int port, int localPort) {
 		Assert.notNull(sshTunnelHost, "sshTunnelHost must not be null");
 		Assert.notNull(host, "host must not be null");
 		Assert.isTrue(port > 0, "illegal port: " + port);
+		Assert.isTrue(localPort >= 0, "illegal local port: " + localPort);
 
 		log.debug("tunneling to {}:{} via {}", host, port, sshTunnelHost);
 
@@ -55,7 +60,7 @@ public class SshProxy implements Closeable {
 
 			SshProxyCommand proxyConfig = sshConfiguration.getProxyCommandConfiguration(sshTunnelHost);
 			if (proxyConfig == null) {
-				return directConnect(sshTunnelHost, host, port);
+				return directConnect(sshTunnelHost, host, port, localPort);
 			}
 
 			int jumpPort = connect(proxyConfig);
@@ -71,7 +76,7 @@ public class SshProxy implements Closeable {
 
 			log.debug("[{}] connected via {}@localhost:{}", sshTunnelHost, hostUser, jumpPort);
 
-			return addLocalPortForwarding(sshTunnelHost, jumpHostSession, host, port);
+			return addLocalPortForwarding(sshTunnelHost, jumpHostSession, host, port, localPort);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to create SSH tunnel to " + host + " via " + sshTunnelHost, e);
 		}
@@ -84,7 +89,7 @@ public class SshProxy implements Closeable {
 		return connect(jumpHost, forwardingHost, forwardingPort);
 	}
 
-	private int directConnect(String jumpHost, String targetHost, int targetPort) throws JSchException {
+	private int directConnect(String jumpHost, String targetHost, int targetPort, int localPort) throws JSchException {
 		Session jumpHostSession = sshConfiguration.openSession(jumpHost);
 		sshSessions.add(jumpHostSession);
 		jumpHostSession.setTimeout(timeoutMillis);
@@ -97,21 +102,21 @@ public class SshProxy implements Closeable {
 
 		log.debug("[{}] connected", jumpHost);
 
-		return addLocalPortForwarding(jumpHost, jumpHostSession, targetHost, targetPort);
+		return addLocalPortForwarding(jumpHost, jumpHostSession, targetHost, targetPort, localPort);
 	}
 
-	private int addLocalPortForwarding(String sshTunnelHost, Session session, String targetHost, int targetPort) throws JSchException {
-		int localPort = session.setPortForwardingL(0, targetHost, targetPort);
+	private int addLocalPortForwarding(String sshTunnelHost, Session session, String targetHost, int targetPort, int localPort) throws JSchException {
+		int localPortReturned = session.setPortForwardingL(localPort, targetHost, targetPort);
 
-		log.debug("[{}] local port {} forwarded to {}:{}", sshTunnelHost, localPort, targetHost, targetPort);
+		log.debug("[{}] local port {} forwarded to {}:{}", sshTunnelHost, localPortReturned, targetHost, targetPort);
 
 		Set<Integer> ports = portForwardings.get(session);
 		if (ports == null) {
 			ports = new LinkedHashSet<>();
 			portForwardings.put(session, ports);
 		}
-		ports.add(Integer.valueOf(localPort));
-		return localPort;
+		ports.add(Integer.valueOf(localPortReturned));
+		return localPortReturned;
 	}
 
 	@Override
