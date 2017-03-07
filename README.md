@@ -13,7 +13,7 @@ Add the following Maven dependency to your project:
 <dependency>
     <groupId>de.cronn</groupId>
     <artifactId>ssh-proxy</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 </dependency>
 ```
 

@@ -19,10 +19,10 @@ apply plugin: "org.sonarqube"
 
 group = 'de.cronn'
 
+version = "1.1"
+
 if (System.env.BUILD_NUMBER) {
-	version = "1.0-SNAPSHOT-b" + System.env.BUILD_NUMBER
-} else {
-	version = "1.0"
+	version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
 }
 
 sourceCompatibility = 1.7
