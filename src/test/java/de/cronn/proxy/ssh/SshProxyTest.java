@@ -16,7 +16,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
 import org.apache.sshd.common.config.keys.KeyUtils;
-import org.apache.sshd.common.util.SecurityUtils;
+import org.apache.sshd.common.util.security.SecurityUtils;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter;
