@@ -18,9 +18,7 @@ plugins {
 	id 'com.jfrog.bintray' version "1.7.3"
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-	apply plugin: 'org.sonarqube'
-}
+apply plugin: 'org.sonarqube'
 
 group = 'de.cronn'
 
@@ -30,8 +28,8 @@ if (System.env.BUILD_NUMBER) {
 	version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 compileJava.options.encoding = 'UTF-8'
 
