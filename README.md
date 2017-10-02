@@ -48,7 +48,7 @@ try (SshProxy sshProxy = new SshProxy()) {
 
 ## Dependencies ##
 
-- Java 7+
+- Java 8+
 - [JSch (with JZlib)][jsch]
 
 [jsch]: http://www.jcraft.com/jsch/
