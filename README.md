@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/cronn-de/ssh-proxy.png?branch=master)](https://travis-ci.org/cronn-de/ssh-proxy)
+[![Apache 2.0](https://img.shields.io/github/license/cronn-de/jira-sync.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # SSH Proxy #
 
