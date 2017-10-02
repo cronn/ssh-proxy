@@ -79,11 +79,58 @@ publishing {
 	}
 }
 
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+
+    developers {
+        developer {
+            id "benedikt.waldvogel"
+            name "Benedikt Waldvogel"
+            email "benedikt.waldvogel@cronn.de"
+        }
+		developer {
+			id "lukasz.dziedziul"
+			name "Lukasz Dziedziul"
+			email "lukasz.dziedziul@cronn.de"
+		}
+    }
+
+    scm {
+       url "https://github.com/cronn-de/ssh-proxy"
+    }
+}
+
+publishing {
+    publications {
+        CronnPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId project.group
+            artifactId project.name
+            version project.version
+			pom.withXml {
+				def root = asNode()
+				root.appendNode('description', 'Pure Java implementation to tunnel to TCP endpoints through SSH')
+				root.appendNode('name', project.name)
+				root.appendNode('url', 'https://github.com/cronn-de/ssh-proxy')
+				root.children().last() + pomConfig
+			}
+        }
+    }
+}
+
 bintray {
 	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
 	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
 
-	publications = ['mavenJava']
+	publications = ['CronnPublication']
 	dryRun = false
 	pkg {
 		repo = 'maven'
@@ -98,6 +145,7 @@ bintray {
 			released = new Date()
 		}
 	}
+	override = true
 }
 
 ext {
