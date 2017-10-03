@@ -153,7 +153,16 @@ public class SshProxyTest {
 	}
 
 	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testTwoHops() throws Exception {
+	public void testTwoHops_ProxyCommand() throws Exception {
+		doTestTwoHops("ProxyCommand ssh -q -W %h:%p firsthop");
+	}
+
+	@Test(timeout = TEST_TIMEOUT_MILLIS)
+	public void testTwoHops_ProxyJump() throws Exception {
+		doTestTwoHops("ProxyJump firsthop");
+	}
+
+	private void doTestTwoHops(String proxyConfiguration) throws Exception {
 		SshServer firstSshServer = setUpSshServer();
 		int firstServerPort = firstSshServer.getPort();
 
@@ -161,10 +170,10 @@ public class SshProxyTest {
 		int secondServerPort = secondSshServer.getPort();
 
 		appendToSshFile(CONFIG_FILENAME, "Host firsthop\n\tHostName localhost\n\tPort " + firstServerPort + "\n\n");
-		appendToSshFile(CONFIG_FILENAME, "Host secondhop\n\tHostName localhost\n\tPort " + secondServerPort + "\n\tProxyCommand ssh -q -W %h:%p firsthop\n\n");
+		appendToSshFile(CONFIG_FILENAME, "Host secondhop\n\tHostName localhost\n\tPort " + secondServerPort + "\n\t" + proxyConfiguration + "\n\n");
 
 		try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
-			SshProxy sshProxy = new SshProxy()) {
+			 SshProxy sshProxy = new SshProxy()) {
 			int port = sshProxy.connect("secondhop", "localhost", dummyServerSocketThread.getPort());
 
 			final String receivedText;

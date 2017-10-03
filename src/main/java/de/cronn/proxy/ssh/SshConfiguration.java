@@ -32,6 +32,7 @@ public class SshConfiguration {
 
 	private static final String SSH_CONFIG_KEY_IDENTITY_FILE = "IdentityFile";
 	private static final String SSH_CONFIG_KEY_PROXY_COMMAND = "ProxyCommand";
+	private static final String SSH_CONFIG_KEY_PROXY_JUMP = "ProxyJump";
 
 	private static final String USER_NAME = System.getProperty("user.name");
 
@@ -82,11 +83,16 @@ public class SshConfiguration {
 	public SshProxyConfig getProxyConfiguration(String host) {
 		Config config = getHostConfig(host);
 		String sshProxyCommand = config.getValue(SSH_CONFIG_KEY_PROXY_COMMAND);
-		if (sshProxyCommand == null) {
-			return null;
-		} else {
-			return SshProxyConfig.parse(sshProxyCommand, host, config);
+		if (sshProxyCommand != null) {
+			return SshProxyConfig.parseProxyCommand(sshProxyCommand, host, config);
 		}
+
+		String sshProxyJump = config.getValue(SSH_CONFIG_KEY_PROXY_JUMP);
+		if (sshProxyJump != null) {
+			return SshProxyConfig.parseProxyJump(sshProxyJump, host, config);
+		}
+
+		return null;
 	}
 
 	void addIdentity(String host) throws JSchException {

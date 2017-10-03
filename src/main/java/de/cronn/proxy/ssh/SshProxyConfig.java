@@ -26,7 +26,7 @@ public class SshProxyConfig {
 		this.jumpHost = jumpHost;
 	}
 
-	public static SshProxyConfig parse(String proxyCommandConfig, String sshTunnelHost, Config hostConfig) {
+	public static SshProxyConfig parseProxyCommand(String proxyCommandConfig, String sshTunnelHost, Config hostConfig) {
 		Matcher matcher = SSH_PROXY_COMMAND_PATTERN.matcher(proxyCommandConfig);
 		Assert.isTrue(matcher.matches(),
 			"Illegal ProxyCommand configured for host " + sshTunnelHost + ": " //
@@ -54,6 +54,22 @@ public class SshProxyConfig {
 			forwardingPort = Integer.parseInt(portConfig);
 		}
 		String jumpHost = matcher.group(3);
+
+		return new SshProxyConfig(forwardingPort, forwardingHost, jumpHost);
+	}
+
+	public static SshProxyConfig parseProxyJump(String proxyJumpConfig, String sshTunnelHost, Config hostConfig) {
+		log.debug("[{}] emulating proxy jump: {}", sshTunnelHost, proxyJumpConfig);
+
+		String forwardingHost = hostConfig.getHostname();
+		if (forwardingHost == null) {
+			forwardingHost = sshTunnelHost;
+		}
+		int forwardingPort = hostConfig.getPort();
+		if (forwardingPort <= 0) {
+			forwardingPort = SshConfiguration.SSH_DEFAULT_PORT;
+		}
+		String jumpHost = proxyJumpConfig;
 
 		return new SshProxyConfig(forwardingPort, forwardingHost, jumpHost);
 	}
