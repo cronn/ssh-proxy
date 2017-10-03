@@ -58,7 +58,7 @@ public class SshProxy implements Closeable {
 		try {
 			sshConfiguration.addIdentity(sshTunnelHost);
 
-			SshProxyCommand proxyConfig = sshConfiguration.getProxyCommandConfiguration(sshTunnelHost);
+			SshProxyConfig proxyConfig = sshConfiguration.getProxyConfiguration(sshTunnelHost);
 			if (proxyConfig == null) {
 				return directConnect(sshTunnelHost, host, port, localPort);
 			}
@@ -82,7 +82,7 @@ public class SshProxy implements Closeable {
 		}
 	}
 
-	private int connect(SshProxyCommand proxyConfig) {
+	private int connect(SshProxyConfig proxyConfig) {
 		String jumpHost = proxyConfig.getJumpHost();
 		String forwardingHost = proxyConfig.getForwardingHost();
 		int forwardingPort = proxyConfig.getForwardingPort();

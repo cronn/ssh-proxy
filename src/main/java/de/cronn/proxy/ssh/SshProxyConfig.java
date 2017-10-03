@@ -10,9 +10,9 @@ import com.jcraft.jsch.ConfigRepository.Config;
 
 import de.cronn.proxy.ssh.util.Assert;
 
-public class SshProxyCommand {
+public class SshProxyConfig {
 
-	private static final Logger log = LoggerFactory.getLogger(SshProxyCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(SshProxyConfig.class);
 
 	private static final Pattern SSH_PROXY_COMMAND_PATTERN = Pattern.compile("ssh -q -W ([\\w\\.\\-_0-9]+|%h):(\\d+|%p) (.+)");
 
@@ -20,13 +20,13 @@ public class SshProxyCommand {
 	private final String forwardingHost;
 	private final String jumpHost;
 
-	public SshProxyCommand(int forwardingPort, String forwardingHost, String jumpHost) {
+	public SshProxyConfig(int forwardingPort, String forwardingHost, String jumpHost) {
 		this.forwardingPort = forwardingPort;
 		this.forwardingHost = forwardingHost;
 		this.jumpHost = jumpHost;
 	}
 
-	public static SshProxyCommand parse(String proxyCommandConfig, String sshTunnelHost, Config hostConfig) {
+	public static SshProxyConfig parse(String proxyCommandConfig, String sshTunnelHost, Config hostConfig) {
 		Matcher matcher = SSH_PROXY_COMMAND_PATTERN.matcher(proxyCommandConfig);
 		Assert.isTrue(matcher.matches(),
 			"Illegal ProxyCommand configured for host " + sshTunnelHost + ": " //
@@ -55,7 +55,7 @@ public class SshProxyCommand {
 		}
 		String jumpHost = matcher.group(3);
 
-		return new SshProxyCommand(forwardingPort, forwardingHost, jumpHost);
+		return new SshProxyConfig(forwardingPort, forwardingHost, jumpHost);
 	}
 
 	public int getForwardingPort() {

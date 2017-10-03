@@ -79,13 +79,13 @@ public class SshConfiguration {
 		return configRepository.getConfig(host);
 	}
 
-	public SshProxyCommand getProxyCommandConfiguration(String host) {
+	public SshProxyConfig getProxyConfiguration(String host) {
 		Config config = getHostConfig(host);
 		String sshProxyCommand = config.getValue(SSH_CONFIG_KEY_PROXY_COMMAND);
 		if (sshProxyCommand == null) {
 			return null;
 		} else {
-			return SshProxyCommand.parse(sshProxyCommand, host, config);
+			return SshProxyConfig.parse(sshProxyCommand, host, config);
 		}
 	}
 
