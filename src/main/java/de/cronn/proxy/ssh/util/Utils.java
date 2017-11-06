@@ -24,6 +24,6 @@ public final class Utils {
 
 
 	public static boolean isNotEmpty(Object[] array) {
-		return (array != null && array.length > 0);
+		return array != null && array.length > 0;
 	}
 }
