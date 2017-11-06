@@ -140,17 +140,21 @@ public class SshProxy implements Closeable {
 		Set<Integer> ports = portForwardings.remove(session);
 		if (ports != null) {
 			for (Integer localPort : ports) {
-				try {
-					String host = session.getHost();
-					if (host.equals(LOCALHOST)) {
-						host = session.getHostKeyAlias();
-					}
-					session.delPortForwardingL(LOCALHOST, localPort.intValue());
-					log.debug("deleted local port forwarding on port {} for {}", localPort, host);
-				} catch (Exception e) {
-					log.error("failed to delete port forwarding of port {}", localPort, e);
-				}
+				deletePortForwarding(session, localPort);
 			}
+		}
+	}
+
+	private void deletePortForwarding(Session session, Integer localPort) {
+		try {
+			String host = session.getHost();
+			if (host.equals(LOCALHOST)) {
+				host = session.getHostKeyAlias();
+			}
+			session.delPortForwardingL(LOCALHOST, localPort.intValue());
+			log.debug("deleted local port forwarding on port {} for {}", localPort, host);
+		} catch (Exception e) {
+			log.error("failed to delete port forwarding of port {}", localPort, e);
 		}
 	}
 

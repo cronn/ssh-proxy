@@ -36,7 +36,7 @@ public class SshProxyConfig {
 		log.debug("[{}] emulating proxy command: {}", sshTunnelHost, proxyCommandConfig);
 
 		String forwardingHost = matcher.group(1);
-		if (forwardingHost.equals("%h")) {
+		if ("%h".equals(forwardingHost)) {
 			forwardingHost = hostConfig.getHostname();
 			if (forwardingHost == null) {
 				forwardingHost = sshTunnelHost;
@@ -44,7 +44,7 @@ public class SshProxyConfig {
 		}
 		String portConfig = matcher.group(2);
 		final int forwardingPort;
-		if (portConfig.equals("%p")) {
+		if ("%p".equals(portConfig)) {
 			int port = hostConfig.getPort();
 			if (port <= 0) {
 				port = SshConfiguration.SSH_DEFAULT_PORT;
