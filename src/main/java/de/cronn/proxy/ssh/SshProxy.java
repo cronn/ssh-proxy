@@ -110,11 +110,7 @@ public class SshProxy implements Closeable {
 
 		log.debug("[{}] local port {} forwarded to {}:{}", sshTunnelHost, localPortReturned, targetHost, targetPort);
 
-		Set<Integer> ports = portForwardings.get(session);
-		if (ports == null) {
-			ports = new LinkedHashSet<>();
-			portForwardings.put(session, ports);
-		}
+		Set<Integer> ports = portForwardings.computeIfAbsent(session, k -> new LinkedHashSet<>());
 		ports.add(Integer.valueOf(localPortReturned));
 		return localPortReturned;
 	}
