@@ -38,7 +38,7 @@ public class SshProxy implements Closeable {
 		try {
 			sshConfiguration = SshConfiguration.getConfiguration();
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to open SSH proxy", e);
+			throw new SshProxyRuntimeException("Failed to open SSH proxy", e);
 		}
 		this.timeoutMillis = timeoutMillis;
 	}
@@ -78,7 +78,7 @@ public class SshProxy implements Closeable {
 
 			return addLocalPortForwarding(sshTunnelHost, jumpHostSession, host, port, localPort);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to create SSH tunnel to " + host + " via " + sshTunnelHost, e);
+			throw new SshProxyRuntimeException("Failed to create SSH tunnel to " + host + " via " + sshTunnelHost, e);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class SshProxy implements Closeable {
 			jumpHostSession.connect(timeoutMillis);
 		} catch (JSchException e) {
 			log.debug("Failed to connect to {} via {}", targetHost, jumpHost, e);
-			throw new RuntimeException("Failed to connect to " + targetHost + " via " + jumpHost);
+			throw new SshProxyRuntimeException("Failed to connect to " + targetHost + " via " + jumpHost);
 		}
 
 		log.debug("[{}] connected", jumpHost);
