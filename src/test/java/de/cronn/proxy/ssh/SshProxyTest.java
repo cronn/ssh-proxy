@@ -193,8 +193,8 @@ public class SshProxyTest {
 	public void testSingleHop_NoHostKeyFound() throws Exception {
 		try (SshProxy sshProxy = new SshProxy()) {
 			sshProxy.connect("jumphost", "targethost", 1234);
-			fail("RuntimeException expected");
-		} catch (RuntimeException e) {
+			fail("SshProxyRuntimeException expected");
+		} catch (SshProxyRuntimeException e) {
 			log.debug("Expected exception", e);
 			assertEquals("Failed to create SSH tunnel to targethost via jumphost", e.getMessage());
 			assertThat(e.getCause().getMessage(), CoreMatchers.startsWith("Found no host key for jumphost"));
@@ -207,8 +207,8 @@ public class SshProxyTest {
 		sshServer.stop();
 		try (SshProxy sshProxy = new SshProxy()) {
 			sshProxy.connect("localhost", "targethost", 1234);
-			fail("RuntimeException expected");
-		} catch (RuntimeException e) {
+			fail("SshProxyRuntimeException expected");
+		} catch (SshProxyRuntimeException e) {
 			log.debug("Expected exception", e);
 			assertEquals("Failed to create SSH tunnel to targethost via localhost", e.getMessage());
 			assertEquals("Failed to connect to targethost via localhost", e.getCause().getMessage());
