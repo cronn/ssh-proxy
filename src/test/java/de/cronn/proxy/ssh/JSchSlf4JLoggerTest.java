@@ -17,6 +17,13 @@ public class JSchSlf4JLoggerTest {
 		assertTrue(logger.isEnabled(Logger.WARN));
 		assertTrue(logger.isEnabled(Logger.ERROR));
 		assertTrue(logger.isEnabled(Logger.FATAL));
+
+		try {
+			logger.isEnabled(100);
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Unknown log level: 100", e.getMessage());
+		}
 	}
 
 	@Test
@@ -28,6 +35,14 @@ public class JSchSlf4JLoggerTest {
 		logger.log(Logger.WARN, "some warning message");
 		logger.log(Logger.ERROR, "some error message");
 		logger.log(Logger.FATAL, "some fatal message");
+
+		try {
+			logger.log(100, "some message");
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Unknown log level: 100", e.getMessage());
+		}
+
 	}
 
 }
