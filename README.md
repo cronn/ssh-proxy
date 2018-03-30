@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/cronn-de/ssh-proxy.png?branch=master)](https://travis-ci.org/cronn-de/ssh-proxy)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.cronn/ssh-proxy/badge.svg)](http://maven-badges.herokuapp.com/maven-central/de.cronn/ssh-proxy)
-[![Apache 2.0](https://img.shields.io/github/license/cronn-de/jira-sync.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Apache 2.0](https://img.shields.io/github/license/cronn-de/ssh-proxy.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Coverage Status](https://coveralls.io/repos/github/cronn-de/ssh-proxy/badge.svg?branch=master)](https://coveralls.io/github/cronn-de/ssh-proxy?branch=master)
 
 # SSH Proxy #
 
