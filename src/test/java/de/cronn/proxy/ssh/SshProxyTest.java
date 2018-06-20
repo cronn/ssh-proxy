@@ -267,7 +267,7 @@ public class SshProxyTest {
 		sshServer.setKeyPairProvider(hostKeyProvider);
 
 		sshServer.setPublickeyAuthenticator(AcceptAllPublickeyAuthenticator.INSTANCE);
-		sshServer.setTcpipForwardingFilter(AcceptAllForwardingFilter.INSTANCE);
+		sshServer.setForwardingFilter(AcceptAllForwardingFilter.INSTANCE);
 
 		writeFingerprintToKnownHosts(algorithm);
 
