@@ -2,7 +2,6 @@ package de.cronn.proxy.ssh;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -61,9 +60,9 @@ public final class JSchHelper {
 	protected static void reconfigureServerHostKeyOrder(ServerHostKeySortOrder hostKeySortOrder) {
 		List<HostKeyType> serverHostKeys = new ArrayList<>(getServerHostKeys());
 		if (hostKeySortOrder == ServerHostKeySortOrder.PREFER_ECDSA) {
-			Collections.sort(serverHostKeys, CMP_PREFER_ECDSA);
+			serverHostKeys.sort(CMP_PREFER_ECDSA);
 		} else if (hostKeySortOrder == ServerHostKeySortOrder.PREFER_RSA) {
-			Collections.sort(serverHostKeys, CMP_PREFER_RSA);
+			serverHostKeys.sort(CMP_PREFER_RSA);
 		} else {
 			throw new IllegalArgumentException("Unknown host key sort order: " + hostKeySortOrder);
 		}
@@ -93,7 +92,7 @@ public final class JSchHelper {
 		String serverHostKey = JSch.getConfig(JSCH_CONFIG_KEY_SERVER_HOST_KEY);
 
 		List<HostKeyType> hostKeyTypes = new ArrayList<>();
-		for (String hostKeyString : Arrays.asList(serverHostKey.split(SERVER_HOST_KEY_SEPARATOR))) {
+		for (String hostKeyString : serverHostKey.split(SERVER_HOST_KEY_SEPARATOR)) {
 			hostKeyTypes.add(HostKeyType.byTypeString(hostKeyString));
 		}
 		return hostKeyTypes;
