@@ -5,10 +5,11 @@
 
 # SSH Proxy #
 
-A pure Java implementation to tunnel to TCP endpoints through SSH. It is an
-abstraction above [JSch][jsch] that is able to understand more sophisticated
-OpenSSH configurations (i.e. the `ProxyJump` and `ProxyCommand` options) which
-involve multiple hops to reach a target host.
+A pure Java implementation for SSH port tunneling that is able to understand
+OpenSSH configurations which involve multiple hops to reach a target host.
+This library essentially combines [JSch][jsch] with the ability to understand
+`ProxyJump` or `ProxyCommand` configurations in your local `~/.ssh/config`
+file.
 
 ## Usage ##
 Add the following Maven dependency to your project:
