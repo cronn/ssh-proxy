@@ -5,7 +5,7 @@
 
 # SSH Proxy #
 
-A pure Java implementation to tunnel to TCP endpoints through SSH. It is an
+A pure Java implementation to tunnel two TCP endpoints through SSH. It is an
 abstraction above [JSch][jsch] that is able to understand more sophisticated
 OpenSSH configurations (i.e. the `ProxyJump` and `ProxyCommand` options) which
 involve multiple hops to reach a target host.
