@@ -1,1 +1,3 @@
 rootProject.name = "ssh-proxy"
+
+enableFeaturePreview('STABLE_PUBLISHING')
