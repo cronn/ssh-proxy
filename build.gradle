@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-	id 'java'
+	id 'java-library'
 	id 'jacoco'
 	id 'eclipse'
 	id 'idea'
@@ -151,18 +151,18 @@ ext {
 }
 
 dependencies {
-	compile "org.slf4j:slf4j-api:${slf4jVersion}"
+	implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 
-	compile "com.jcraft:jsch:${jschVersion}"
-	runtime "com.jcraft:jzlib:${jzlibVersion}"
+	implementation "com.jcraft:jsch:${jschVersion}"
+	runtimeOnly "com.jcraft:jzlib:${jzlibVersion}"
 
-	testCompile "junit:junit:${junitVersion}"
-	testCompile "org.mockito:mockito-core:${mockitoVersion}"
-	testCompile ("org.apache.sshd:apache-sshd:${apacheSshdVersion}") {
+	testImplementation "junit:junit:${junitVersion}"
+	testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+	testImplementation ("org.apache.sshd:apache-sshd:${apacheSshdVersion}") {
 		exclude group: 'org.slf4j', module: 'slf4j-jdk14'
 	}
 
-	testRuntime	"ch.qos.logback:logback-classic:${logbackVersion}"
-	testRuntime "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+	testRuntimeOnly	"ch.qos.logback:logback-classic:${logbackVersion}"
+	testRuntimeOnly "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
 
 }
