@@ -2,9 +2,6 @@ buildscript {
 	repositories {
 		mavenCentral()
 	}
-	dependencyLocking {
-		lockAllConfigurations()
-	}
 }
 
 plugins {
@@ -164,4 +161,8 @@ dependencies {
 		}
 	}
 
+}
+
+dependencyLocking {
+	lockAllConfigurations()
 }
