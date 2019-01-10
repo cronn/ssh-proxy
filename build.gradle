@@ -2,6 +2,9 @@ buildscript {
 	repositories {
 		mavenCentral()
 	}
+	dependencyLocking {
+		lockAllConfigurations()
+	}
 }
 
 plugins {
@@ -136,28 +139,28 @@ bintray {
 	override = true
 }
 
-ext {
-	jschVersion = "0.1.54"
-	jzlibVersion = "1.1.3"
-	slf4jVersion = "1.7.21"
-	apacheSshdVersion = "2.0.0"
-	junitVersion = "4.12"
-	logbackVersion = "1.2.3"
-	mockitoVersion = "2.19.0"
-}
-
 dependencies {
-	implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+	implementation "org.slf4j:slf4j-api:latest.release"
 
-	implementation "com.jcraft:jsch:${jschVersion}"
-	runtimeOnly "com.jcraft:jzlib:${jzlibVersion}"
+	implementation "com.jcraft:jsch:latest.release"
+	runtimeOnly "com.jcraft:jzlib:latest.release"
 
-	testImplementation "junit:junit:${junitVersion}"
-	testImplementation "org.mockito:mockito-core:${mockitoVersion}"
-	testImplementation ("org.apache.sshd:apache-sshd:${apacheSshdVersion}") {
+	testImplementation "junit:junit:latest.release"
+	testImplementation "org.mockito:mockito-core:latest.release"
+	testImplementation ("org.apache.sshd:apache-sshd:latest.release") {
 		exclude group: 'org.slf4j', module: 'slf4j-jdk14'
 	}
 
-	testRuntimeOnly	"ch.qos.logback:logback-classic:${logbackVersion}"
-	testRuntimeOnly "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+	testRuntimeOnly	"ch.qos.logback:logback-classic:latest.release"
+	testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
+
+	components.all { ComponentMetadataDetails details ->
+		details.statusScheme = ['candidate', 'release']
+		if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA).*/) {
+			details.status = 'candidate'
+		} else {
+			details.status = 'release'
+		}
+	}
+
 }
