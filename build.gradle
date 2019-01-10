@@ -44,7 +44,7 @@ jacocoTestReport {
 }
 
 wrapper {
-	gradleVersion = "5.0"
+	gradleVersion = "5.1"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -160,5 +160,4 @@ dependencies {
 
 	testRuntimeOnly	"ch.qos.logback:logback-classic:${logbackVersion}"
 	testRuntimeOnly "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
-
 }
