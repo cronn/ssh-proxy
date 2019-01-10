@@ -149,6 +149,7 @@ dependencies {
 	testImplementation "org.mockito:mockito-core:latest.release"
 	testImplementation ("org.apache.sshd:apache-sshd:latest.release") {
 		exclude group: 'org.slf4j', module: 'slf4j-jdk14'
+		exclude group: 'org.apache.sshd', module: 'sshd-mina'
 	}
 
 	testRuntimeOnly	"ch.qos.logback:logback-classic:latest.release"
