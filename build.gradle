@@ -144,10 +144,9 @@ dependencies {
 
 	testImplementation "junit:junit:latest.release"
 	testImplementation "org.mockito:mockito-core:latest.release"
-	testImplementation ("org.apache.sshd:apache-sshd:latest.release") {
-		exclude group: 'org.slf4j', module: 'slf4j-jdk14'
-		exclude group: 'org.apache.sshd', module: 'sshd-mina'
-	}
+
+	testImplementation "org.apache.sshd:sshd-core:latest.release"
+	testRuntimeOnly "org.bouncycastle:bcprov-jdk15on:latest.release"
 
 	testRuntimeOnly	"ch.qos.logback:logback-classic:latest.release"
 	testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
