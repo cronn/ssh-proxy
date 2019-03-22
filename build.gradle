@@ -58,57 +58,50 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 	from javadoc.destinationDir
 }
 
-artifacts {
-	archives sourcesJar, javadocJar
-}
-
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-			artifact sourcesJar
-			artifact javadocJar
-		}
-	}
-}
-
-def pomConfig = {
-	licenses {
-		license {
-			name "The Apache Software License, Version 2.0"
-			url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-			distribution "repo"
-		}
-	}
-
-	developers {
-		developer {
-			id "benedikt.waldvogel"
-			name "Benedikt Waldvogel"
-			email "benedikt.waldvogel@cronn.de"
-		}
-	}
-
-	scm {
-	   url "https://github.com/cronn-de/ssh-proxy"
-	}
-}
-
 publishing {
 	publications {
 		CronnPublication(MavenPublication) {
+			groupId = project.group
+			artifactId = project.name
+			version = project.version
+			pom {
+				name = project.name
+				description = 'Pure Java implementation to tunnel to TCP endpoints through SSH'
+				url = 'https://github.com/cronn-de/ssh-proxy'
+
+				licenses {
+					license {
+						name = "The Apache Software License, Version 2.0"
+						url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+						distribution = "repo"
+					}
+				}
+
+				developers {
+					developer {
+						id = "benedikt.waldvogel"
+						name = "Benedikt Waldvogel"
+						email = "benedikt.waldvogel@cronn.de"
+					}
+				}
+
+				scm {
+				   url = "https://github.com/cronn-de/ssh-proxy"
+				}
+			}
+
 			from components.java
+
 			artifact sourcesJar
 			artifact javadocJar
-			groupId project.group
-			artifactId project.name
-			version project.version
-			pom.withXml {
-				def root = asNode()
-				root.appendNode('description', 'Pure Java implementation to tunnel to TCP endpoints through SSH')
-				root.appendNode('name', project.name)
-				root.appendNode('url', 'https://github.com/cronn-de/ssh-proxy')
-				root.children().last() + pomConfig
+
+			versionMapping {
+				usage('java-api') {
+					fromResolutionOf('runtimeClasspath')
+				}
+				usage('java-runtime') {
+					fromResolutionResult()
+				}
 			}
 		}
 	}
