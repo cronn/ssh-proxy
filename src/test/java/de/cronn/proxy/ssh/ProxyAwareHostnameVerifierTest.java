@@ -8,16 +8,21 @@ import javax.net.ssl.SSLSession;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProxyAwareHostnameVerifierTest {
 
+	@Mock
+	HostnameVerifier hostnameVerifier;
+
+	@Mock
+	SSLSession session;
+
 	@Test
 	public void shouldInvokeVerifierWithOriginalHost() throws Exception {
-		HostnameVerifier hostnameVerifier = mock(HostnameVerifier.class);
 		String originalHost = "originalHost";
-		SSLSession session = mock(SSLSession.class);
 
 		ProxyAwareHostnameVerifier sut = new ProxyAwareHostnameVerifier(hostnameVerifier, originalHost);
 		sut.verify("proxy", session);
