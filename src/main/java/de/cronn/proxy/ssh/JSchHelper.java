@@ -68,7 +68,7 @@ public final class JSchHelper {
 		}
 
 		if (!getServerHostKeys().equals(serverHostKeys)) {
-			log.debug("changing server host key order to: " + serverHostKeys);
+			log.debug("changing server host key order to: {}", serverHostKeys);
 
 			List<String> serverHostKeyNames = new ArrayList<>();
 			for (HostKeyType serverHostKey : serverHostKeys) {
