@@ -15,10 +15,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class ProxyAwareHostnameVerifierTest {
 
 	@Mock
-	HostnameVerifier hostnameVerifier;
+	private HostnameVerifier hostnameVerifier;
 
 	@Mock
-	SSLSession session;
+	private SSLSession session;
 
 	@Test
 	public void shouldInvokeVerifierWithOriginalHost() throws Exception {
