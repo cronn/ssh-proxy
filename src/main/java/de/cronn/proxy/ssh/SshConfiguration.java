@@ -134,16 +134,7 @@ public class SshConfiguration {
 	private ServerHostKeySortOrder guessPreferredHostKeySortOrder(String jumpHostName, Config hostConfig) {
 		HostKeyRepository hostKeyRepository = jsch.getHostKeyRepository();
 
-		List<String> potentialHostNames = new ArrayList<>();
-		potentialHostNames.add(jumpHostName);
-
-		String configHostName = hostConfig.getHostname();
-		if (configHostName != null) {
-			if (hostConfig.getPort() > 0 && hostConfig.getPort() != SSH_DEFAULT_PORT) {
-				configHostName = "[" + configHostName + "]:" + hostConfig.getPort();
-			}
-			potentialHostNames.add(configHostName);
-		}
+		List<String> potentialHostNames = collectPotentialHostnames(jumpHostName, hostConfig);
 
 		for (String hostname : potentialHostNames) {
 			for (HostKeyType hostKeyType : EnumSet.of(HostKeyType.ECDSA256, HostKeyType.ECDSA384, HostKeyType.ECDSA521)) {
@@ -166,6 +157,20 @@ public class SshConfiguration {
 			hostDescription += " (" + hostConfig.getHostname() + ")";
 		}
 		throw new IllegalArgumentException("Found no host key for " + hostDescription + " in " + hostKeyRepository.getKnownHostsRepositoryID());
+	}
+
+	private List<String> collectPotentialHostnames(String jumpHostName, Config hostConfig) {
+		List<String> potentialHostNames = new ArrayList<>();
+		potentialHostNames.add(jumpHostName);
+
+		String configHostName = hostConfig.getHostname();
+		if (configHostName != null) {
+			if (hostConfig.getPort() > 0 && hostConfig.getPort() != SSH_DEFAULT_PORT) {
+				configHostName = "[" + configHostName + "]:" + hostConfig.getPort();
+			}
+			potentialHostNames.add(configHostName);
+		}
+		return potentialHostNames;
 	}
 
 	public Session openSession(String host) throws JSchException {
