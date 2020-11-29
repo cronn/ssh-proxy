@@ -89,7 +89,7 @@ public class SshProxyTest {
 		appendToSshFile(CONFIG_FILENAME, "Host " + hostConfigName + "\n\tHostName localhost\n\tPort " + sshServerPort + "\n\n");
 
 		try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
-			SshProxy sshProxy = new SshProxy()) {
+			 SshProxy sshProxy = new SshProxy()) {
 			int port = sshProxy.connect(hostConfigName, "localhost", dummyServerSocketThread.getPort());
 
 			final String receivedText;
@@ -113,7 +113,7 @@ public class SshProxyTest {
 		appendToSshFile(CONFIG_FILENAME, "Host " + hostConfigName + "\n\tHostName localhost\n\tPort " + sshServerPort + "\n\n");
 
 		try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
-			SshProxy sshProxy = new SshProxy()) {
+			 SshProxy sshProxy = new SshProxy()) {
 			int port = sshProxy.connect(hostConfigName, "localhost", dummyServerSocketThread.getPort());
 
 			final String receivedText;
@@ -137,7 +137,7 @@ public class SshProxyTest {
 		appendToSshFile(CONFIG_FILENAME, "Host " + hostConfigName + "\n\tHostName localhost\n\tPort " + sshServerPort + "\n\n");
 
 		try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
-			SshProxy sshProxy = new SshProxy()) {
+			 SshProxy sshProxy = new SshProxy()) {
 			int port = sshProxy.connect(hostConfigName, "localhost", dummyServerSocketThread.getPort(), 2345);
 
 			final String receivedText;
