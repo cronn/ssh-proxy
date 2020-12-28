@@ -1,4 +1,4 @@
-![CI](https://github.com/cronn/ssh-proxy/workflows/CI/badge.svg)
+[![CI](https://github.com/cronn/ssh-proxy/workflows/CI/badge.svg)](https://github.com/cronn/ssh-proxy/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.cronn/ssh-proxy/badge.svg)](http://maven-badges.herokuapp.com/maven-central/de.cronn/ssh-proxy)
 [![Apache 2.0](https://img.shields.io/github/license/cronn/ssh-proxy.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Coverage Status](https://coveralls.io/repos/github/cronn/ssh-proxy/badge.svg?branch=master)](https://coveralls.io/github/cronn/ssh-proxy?branch=master)
