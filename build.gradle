@@ -10,7 +10,6 @@ plugins {
     id 'eclipse'
     id 'idea'
 
-    id 'maven'
     id 'maven-publish'
     id 'org.sonarqube' version '3.0'
     id 'com.jfrog.bintray' version '1.8.5'
@@ -44,7 +43,7 @@ jacocoTestReport {
 }
 
 wrapper {
-    gradleVersion = "6.8"
+    gradleVersion = "7.0"
     distributionType = Wrapper.DistributionType.ALL
 }
 
