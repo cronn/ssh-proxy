@@ -42,8 +42,8 @@ Host targetHost
 ```java
 try (SshProxy sshProxy = new SshProxy()) {
     int targetPort = 1234;
-    int port = sshProxy.connect("jumpHost2", "targetHost", targetPort);
-    try (Socket s = new Socket(SshProxy.LOCALHOST, port)) {
+    int randomLocalPort = sshProxy.connect("jumpHost2", "targetHost", targetPort);
+    try (Socket s = new Socket(SshProxy.LOCALHOST, randomLocalPort)) {
         OutputStream out = s.getOutputStream();
         InputStream in = s.getInputStream();
         // ...
