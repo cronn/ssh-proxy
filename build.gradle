@@ -35,15 +35,15 @@ repositories {
 
 jacocoTestReport {
     reports {
-        html.enabled = false
-        xml.enabled = true
-        csv.enabled = false
+        html.required = false
+        xml.required = true
+        csv.required = false
     }
     dependsOn test
 }
 
 wrapper {
-    gradleVersion = "7.0"
+    gradleVersion = "7.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 
