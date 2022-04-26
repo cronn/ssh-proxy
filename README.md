@@ -12,6 +12,9 @@ This library essentially combines [JSch][jsch] with the ability to understand
 `ProxyJump` or `ProxyCommand` configurations in your local `~/.ssh/config`
 file.
 
+See our [blog post "Tunneling Basics – Part II: OpenSSH Configuration Files"][blog-post-ssh-configuration-files] for
+some context where and how this library can be used.
+
 ## Usage ##
 Add the following Maven dependency to your project:
 
@@ -58,3 +61,4 @@ try (SshProxy sshProxy = new SshProxy()) {
 - [JSch (with JZlib)][jsch]
 
 [jsch]: http://www.jcraft.com/jsch/
+[blog-post-ssh-configuration-files]: https://blog.cronn.de/en/ssh/configuration/2021/08/16/ssh-configuration.html
