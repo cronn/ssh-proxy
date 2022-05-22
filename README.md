@@ -1,7 +1,7 @@
 [![CI](https://github.com/cronn/ssh-proxy/workflows/CI/badge.svg)](https://github.com/cronn/ssh-proxy/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.cronn/ssh-proxy/badge.svg)](http://maven-badges.herokuapp.com/maven-central/de.cronn/ssh-proxy)
 [![Apache 2.0](https://img.shields.io/github/license/cronn/ssh-proxy.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![codecov](https://codecov.io/gh/cronn/ssh-proxy/branch/master/graph/badge.svg?token=qhZPq2vKnv)](https://codecov.io/gh/cronn/ssh-proxy)
+[![codecov](https://codecov.io/gh/cronn/ssh-proxy/branch/main/graph/badge.svg?token=qhZPq2vKnv)](https://codecov.io/gh/cronn/ssh-proxy)
 [![Valid Gradle Wrapper](https://github.com/cronn/ssh-proxy/workflows/Validate%20Gradle%20Wrapper/badge.svg)](https://github.com/cronn/ssh-proxy/actions/workflows/gradle-wrapper-validation.yml)
 
 # SSH Proxy #
