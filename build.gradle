@@ -24,8 +24,10 @@ if (System.env.BUILD_NUMBER) {
     version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -43,7 +45,7 @@ jacocoTestReport {
 }
 
 wrapper {
-    gradleVersion = "7.4.1"
+    gradleVersion = "8.2"
     distributionType = Wrapper.DistributionType.ALL
 }
 
