@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
@@ -102,6 +103,52 @@ public class SshProxyTest {
 		} finally {
 			tryStop(sshServer);
 		}
+	}
+
+	@Test(timeout = TEST_TIMEOUT_MILLIS)
+	public void testSingleHopWithPassphraseAuthentication() throws Exception {
+		setupNewSshKeys("id_rsa_passphrase", "id_rsa_passphrase.pub");
+		SshServer sshServer = setUpSshServer();
+		int sshServerPort = sshServer.getPort();
+
+		String hostConfigName = "localhost-" + sshServerPort;
+		appendToSshFile(CONFIG_FILENAME, "Host " + hostConfigName + "\n\tHostName localhost\n\tPort " + sshServerPort + "\n\n");
+
+		String testPassword = "password";
+
+		try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
+			 SshProxy sshProxy = new SshProxy(testPassword)) {
+			int port = sshProxy.connect(hostConfigName, "localhost", dummyServerSocketThread.getPort());
+
+			final String receivedText;
+			try (Socket s = new Socket(SshProxy.LOCALHOST, port);
+				 InputStream is = s.getInputStream()) {
+				log.info("connected to port: {}", port);
+				receivedText = readLine(is);
+			}
+			assertEquals(TEST_TEXT, receivedText);
+		} finally {
+			tryStop(sshServer);
+		}
+	}
+
+	@Test(timeout = TEST_TIMEOUT_MILLIS)
+	public void testSingleHopWithPassphraseAuthentication_IncorrectPassphrase() throws Exception {
+		setupNewSshKeys("id_rsa_passphrase", "id_rsa_passphrase.pub");
+		SshServer sshServer = setUpSshServer();
+		int sshServerPort = sshServer.getPort();
+
+		String hostConfigName = "localhost-" + sshServerPort;
+		appendToSshFile(CONFIG_FILENAME, "Host " + hostConfigName + "\n\tHostName localhost\n\tPort " + sshServerPort + "\n\n");
+
+		String testPassword = "incorrectPassword";
+
+		assertThrows(de.cronn.proxy.ssh.SshProxyRuntimeException.class, () -> {
+			try (DummyServerSocketThread dummyServerSocketThread = new DummyServerSocketThread(TRANSFER_CHARSET, TEST_TEXT);
+				 SshProxy sshProxy = new SshProxy(testPassword)) {
+				sshProxy.connect(hostConfigName, "localhost", dummyServerSocketThread.getPort());
+			}
+		});
 	}
 
 	@Test(timeout = TEST_TIMEOUT_MILLIS)
@@ -306,6 +353,13 @@ public class SshProxyTest {
 	private void appendToSshFile(String filename, String text) throws IOException {
 		Path config = dotSsh.resolve(filename);
 		Files.write(config, text.getBytes(CONFIG_CHARSET), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+	}
+
+	private void setupNewSshKeys(String privateKeyFile, String publicKeyFile) throws IOException {
+		Path dotSsh = Paths.get(System.getProperty("user.home"), ".ssh");
+		Path TEST_RESOURCES = Paths.get("src", "test", "resources");
+		Files.copy(TEST_RESOURCES.resolve(privateKeyFile), dotSsh.resolve("id_rsa"), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(TEST_RESOURCES.resolve(publicKeyFile), dotSsh.resolve("id_rsa.pub"), StandardCopyOption.REPLACE_EXISTING);
 	}
 
 }

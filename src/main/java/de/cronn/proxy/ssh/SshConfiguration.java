@@ -96,13 +96,24 @@ public class SshConfiguration {
 	}
 
 	void addIdentity(String host) throws JSchException {
+		String identityFile = getIdentityFileForHost(host);
+		log.debug("using SSH key file {}", identityFile);
+		jsch.addIdentity(identityFile);
+	}
+
+	void addIdentity(String host, String passphrase) throws JSchException {
+		String identityFile = getIdentityFileForHost(host);
+		log.debug("using SSH key file {}", identityFile);
+		jsch.addIdentity(identityFile, passphrase);
+	}
+
+	private String getIdentityFileForHost(String host) {
 		Config hostConfig = getHostConfig(host);
 		String identityFile = hostConfig.getValue(SSH_CONFIG_KEY_IDENTITY_FILE);
 		if (identityFile == null) {
 			identityFile = getDefaultSshKeyPath().toString();
 		}
-		log.debug("using SSH key file {}", identityFile);
-		jsch.addIdentity(identityFile);
+		return identityFile;
 	}
 
 	public String getHostUser(String host) {
