@@ -30,11 +30,22 @@ public class SshProxy implements Closeable {
 	private final SshConfiguration sshConfiguration;
 	private int timeoutMillis;
 
+	private final String passphrase;
+
 	public SshProxy() {
-		this(DEFAULT_TIMEOUT_MILLIS);
+		this(DEFAULT_TIMEOUT_MILLIS, null);
+	}
+
+	public SshProxy(String passphrase) {
+		this(DEFAULT_TIMEOUT_MILLIS, passphrase);
 	}
 
 	public SshProxy(int timeoutMillis) {
+		this(timeoutMillis, null);
+	}
+
+	public SshProxy(int timeoutMillis, String passphrase) {
+		this.passphrase = passphrase;
 		try {
 			sshConfiguration = SshConfiguration.getConfiguration();
 		} catch (Exception e) {
@@ -56,7 +67,11 @@ public class SshProxy implements Closeable {
 		log.debug("tunneling to {}:{} via {}", host, port, sshTunnelHost);
 
 		try {
-			sshConfiguration.addIdentity(sshTunnelHost);
+			if (passphrase != null && !passphrase.isEmpty()) {
+				sshConfiguration.addIdentity(sshTunnelHost, passphrase);
+			} else {
+				sshConfiguration.addIdentity(sshTunnelHost);
+			}
 
 			SshProxyConfig proxyConfig = sshConfiguration.getProxyConfiguration(sshTunnelHost);
 			if (proxyConfig == null) {
