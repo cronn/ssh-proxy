@@ -1,6 +1,6 @@
 package de.cronn.proxy.ssh;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,6 @@ import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter;
 import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +53,9 @@ public class SshProxyTest {
 
 	@Before
 	public void checkBouncyCastleIsRegistered() {
-		assertTrue("BouncyCastle is registered", SecurityUtils.isBouncyCastleRegistered());
+		assertThat(SecurityUtils.isBouncyCastleRegistered())
+			.describedAs("BouncyCastle is registered")
+			.isTrue();
 	}
 
 	@Before
@@ -98,7 +99,7 @@ public class SshProxyTest {
 				log.info("connected to port: {}", port);
 				receivedText = readLine(is);
 			}
-			assertEquals(TEST_TEXT, receivedText);
+			assertThat(receivedText).isEqualTo(TEST_TEXT);
 		} finally {
 			tryStop(sshServer);
 		}
@@ -122,7 +123,7 @@ public class SshProxyTest {
 				log.info("connected to port: {}", port);
 				receivedText = readLine(is);
 			}
-			assertEquals(TEST_TEXT, receivedText);
+			assertThat(receivedText).isEqualTo(TEST_TEXT);
 		} finally {
 			tryStop(sshServer);
 		}
@@ -146,7 +147,7 @@ public class SshProxyTest {
 				log.info("connected to port: {}", port);
 				receivedText = readLine(is);
 			}
-			assertEquals(TEST_TEXT, receivedText);
+			assertThat(receivedText).isEqualTo(TEST_TEXT);
 		} finally {
 			tryStop(sshServer);
 		}
@@ -182,7 +183,7 @@ public class SshProxyTest {
 				log.info("connected to port: {}", port);
 				receivedText = readLine(is);
 			}
-			assertEquals(TEST_TEXT, receivedText);
+			assertThat(receivedText).isEqualTo(TEST_TEXT);
 		} finally {
 			tryStop(firstSshServer);
 			tryStop(secondSshServer);
@@ -196,22 +197,23 @@ public class SshProxyTest {
 			fail("SshProxyRuntimeException expected");
 		} catch (SshProxyRuntimeException e) {
 			log.debug("Expected exception", e);
-			assertEquals("Failed to create SSH tunnel to targethost via jumphost", e.getMessage());
-			assertThat(e.getCause().getMessage(), CoreMatchers.startsWith("Found no host key for jumphost"));
+			assertThat(e.getMessage()).isEqualTo("Failed to create SSH tunnel to targethost via jumphost");
+			assertThat(e.getCause().getMessage()).startsWith("Found no host key for jumphost");
 		}
 	}
 
 	@Test(timeout = TEST_TIMEOUT_MILLIS)
 	public void testSingleHop_ConnectionRefused() throws Exception {
-		SshServer sshServer = setUpSshServer();
-		sshServer.stop();
-		try (SshProxy sshProxy = new SshProxy()) {
-			sshProxy.connect("localhost", "targethost", 1234);
-			fail("SshProxyRuntimeException expected");
-		} catch (SshProxyRuntimeException e) {
-			log.debug("Expected exception", e);
-			assertEquals("Failed to create SSH tunnel to targethost via localhost", e.getMessage());
-			assertEquals("Failed to connect to targethost via localhost", e.getCause().getMessage());
+		try (SshServer sshServer = setUpSshServer()) {
+			sshServer.stop();
+			try (SshProxy sshProxy = new SshProxy()) {
+				sshProxy.connect("localhost", "targethost", 1234);
+				fail("SshProxyRuntimeException expected");
+			} catch (SshProxyRuntimeException e) {
+				log.debug("Expected exception", e);
+				assertThat(e.getMessage()).isEqualTo("Failed to create SSH tunnel to targethost via localhost");
+				assertThat(e.getCause().getMessage()).isEqualTo("Failed to connect to targethost via localhost");
+			}
 		}
 	}
 
@@ -221,7 +223,7 @@ public class SshProxyTest {
 			sshProxy.connect("localhost", "targethost", 0);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			assertEquals("illegal port: 0", e.getMessage());
+			assertThat(e.getMessage()).isEqualTo("illegal port: 0");
 		}
 	}
 
@@ -231,7 +233,7 @@ public class SshProxyTest {
 			sshProxy.connect("localhost", "targethost", 1234, -1);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			assertEquals("illegal local port: -1", e.getMessage());
+			assertThat(e.getMessage()).isEqualTo("illegal local port: -1");
 		}
 	}
 
@@ -247,7 +249,7 @@ public class SshProxyTest {
 	private String readLine(InputStream is) throws IOException {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, TRANSFER_CHARSET))) {
 			String line = reader.readLine();
-			assertNotNull(line);
+			assertThat(line).isNotNull();
 			return line.trim();
 		}
 	}
@@ -274,7 +276,7 @@ public class SshProxyTest {
 		sshServer.start();
 
 		int sshServerPort = sshServer.getPort();
-		assertTrue(sshServerPort > 0);
+		assertThat(sshServerPort).isPositive();
 
 		return sshServer;
 	}

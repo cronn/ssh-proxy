@@ -129,6 +129,7 @@ dependencies {
     runtimeOnly "com.jcraft:jzlib:latest.release"
 
     testImplementation "junit:junit:latest.release"
+    testImplementation 'org.assertj:assertj-core:latest.release'
     testImplementation "org.mockito:mockito-core:latest.release"
 
     testImplementation "org.apache.sshd:sshd-core:latest.release"
