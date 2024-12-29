@@ -45,7 +45,7 @@ jacocoTestReport {
 }
 
 wrapper {
-    gradleVersion = "8.10.1"
+    gradleVersion = "8.12"
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -108,7 +108,7 @@ publishing {
     }
     repositories {
         maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             credentials {
                 username = project.hasProperty('nexusUsername') ? project.property('nexusUsername') : System.getenv('NEXUS_USERNAME')
                 password = project.hasProperty('nexusPassword') ? project.property('nexusPassword') : System.getenv('NEXUS_PASSWORD')
