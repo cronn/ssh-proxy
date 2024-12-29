@@ -307,7 +307,7 @@ public class SshProxyTest {
 
 	private void appendToSshFile(String filename, String text) throws IOException {
 		Path config = dotSsh.resolve(filename);
-		Files.write(config, text.getBytes(CONFIG_CHARSET), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+		Files.writeString(config, text, CONFIG_CHARSET, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 	}
 
 }
