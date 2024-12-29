@@ -1,57 +1,48 @@
 package de.cronn.proxy.ssh.util;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class AssertTest {
+class AssertTest {
 
 	@Test
-	public void testConstructorIsPrivate() throws Exception {
+	void testConstructorIsPrivate() throws Exception {
 		Constructor<?> constructor = Assert.class.getDeclaredConstructor();
-		assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+		assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
 		constructor.setAccessible(true);
 		constructor.newInstance();
 	}
 
 	@Test
-	public void testNotNull() throws Exception {
+	void testNotNull() {
 		Assert.notNull("", "should not be null");
 		Assert.notNull(new Object(), "should not be null");
 
-		try {
-			Assert.notNull(null, "should not be null");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("should not be null", e.getMessage());
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> Assert.notNull(null, "should not be null"))
+			.withMessage("should not be null");
 	}
 
 	@Test
-	public void testIsNull() throws Exception {
+	void testIsNull() {
 		Assert.isNull(null, "should be null");
 
-		try {
-			Assert.isNull("", "should not null");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("should not null", e.getMessage());
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> Assert.isNull("", "should not be null"))
+			.withMessage("should not be null");
 	}
 
 	@Test
-	public void testIsTrue() throws Exception {
+	void testIsTrue() {
 		Assert.isTrue(true, "should be true");
 
-		try {
-			Assert.isTrue(false, "should not true");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("should not true", e.getMessage());
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> Assert.isTrue(false, "should not be true"))
+			.withMessage("should not be true");
 	}
 
 }

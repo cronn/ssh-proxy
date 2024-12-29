@@ -1,51 +1,45 @@
 package de.cronn.proxy.ssh;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.jcraft.jsch.HostKey;
 
-public class HostKeyTypeTest {
+class HostKeyTypeTest {
 
 	@Test
-	public void testGetType() throws Exception {
-		assertEquals(HostKey.SSHRSA, HostKeyType.SSH_RSA.getType());
-		assertEquals(HostKey.SSHDSS, HostKeyType.SSH_DSS.getType());
+	void testGetType() {
+		assertThat(HostKeyType.SSH_RSA.getType()).isEqualTo(HostKey.SSHRSA);
+		assertThat(HostKeyType.SSH_DSS.getType()).isEqualTo(HostKey.SSHDSS);
 
 		for (HostKeyType hostKeyType : HostKeyType.values()) {
-			assertTrue(hostKeyType.getType() > 0);
+			assertThat(hostKeyType.getType()).isPositive();
 		}
 	}
 
 	@Test
-	public void testGetTypeString() throws Exception {
-		assertEquals("ssh-rsa", HostKeyType.SSH_RSA.getTypeString());
-		assertEquals("ssh-dss", HostKeyType.SSH_DSS.getTypeString());
+	void testGetTypeString() {
+		assertThat(HostKeyType.SSH_RSA.getTypeString()).isEqualTo("ssh-rsa");
+		assertThat(HostKeyType.SSH_DSS.getTypeString()).isEqualTo("ssh-dss");
 
 		for (HostKeyType hostKeyType : HostKeyType.values()) {
-			assertNotNull(hostKeyType.getTypeString());
+			assertThat(hostKeyType.getTypeString()).isNotNull();
 		}
 	}
 
 	@Test
-	public void testByTypeString() throws Exception {
-		assertEquals(HostKeyType.SSH_RSA, HostKeyType.byTypeString("ssh-rsa"));
-		assertEquals(HostKeyType.SSH_DSS, HostKeyType.byTypeString("ssh-dss"));
+	void testByTypeString() {
+		assertThat(HostKeyType.byTypeString("ssh-rsa")).isEqualTo(HostKeyType.SSH_RSA);
+		assertThat(HostKeyType.byTypeString("ssh-dss")).isEqualTo(HostKeyType.SSH_DSS);
 
-		try {
-			HostKeyType.byTypeString(null);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("No hostKeyType found for null", e.getMessage());
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> HostKeyType.byTypeString(null))
+			.withMessage("No hostKeyType found for null");
 
-		try {
-			HostKeyType.byTypeString("ssh-does-not-exist");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("No hostKeyType found for ssh-does-not-exist", e.getMessage());
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> HostKeyType.byTypeString("ssh-does-not-exist"))
+			.withMessage("No hostKeyType found for ssh-does-not-exist");
 	}
 
 }

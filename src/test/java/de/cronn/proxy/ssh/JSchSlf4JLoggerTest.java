@@ -1,33 +1,31 @@
 package de.cronn.proxy.ssh;
 
-import static org.junit.Assert.*;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 import com.jcraft.jsch.Logger;
 
-public class JSchSlf4JLoggerTest {
+class JSchSlf4JLoggerTest {
 
 	@Test
-	public void testIsEnabled() throws Exception {
+	void testIsEnabled() {
 		JSchSlf4JLogger logger = new JSchSlf4JLogger();
 
-		assertFalse(logger.isEnabled(Logger.DEBUG));
-		assertFalse(logger.isEnabled(Logger.INFO));
-		assertTrue(logger.isEnabled(Logger.WARN));
-		assertTrue(logger.isEnabled(Logger.ERROR));
-		assertTrue(logger.isEnabled(Logger.FATAL));
+		assertThat(logger.isEnabled(Logger.DEBUG)).isFalse();
+		assertThat(logger.isEnabled(Logger.INFO)).isFalse();
+		assertThat(logger.isEnabled(Logger.WARN)).isTrue();
+		assertThat(logger.isEnabled(Logger.ERROR)).isTrue();
+		assertThat(logger.isEnabled(Logger.FATAL)).isTrue();
 
-		try {
-			logger.isEnabled(100);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("Unknown log level: 100", e.getMessage());
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> logger.isEnabled(100))
+			.withMessage("Unknown log level: 100");
 	}
 
 	@Test
-	public void testLog() throws Exception {
+	void testLog() {
 		JSchSlf4JLogger logger = new JSchSlf4JLogger();
 
 		logger.log(Logger.DEBUG, "some debug message");
@@ -36,13 +34,9 @@ public class JSchSlf4JLoggerTest {
 		logger.log(Logger.ERROR, "some error message");
 		logger.log(Logger.FATAL, "some fatal message");
 
-		try {
-			logger.log(100, "some message");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("Unknown log level: 100", e.getMessage());
-		}
-
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> logger.log(100, "some message"))
+			.withMessage("Unknown log level: 100");
 	}
 
 }

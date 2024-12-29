@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.util.security.SecurityUtils;
@@ -21,15 +22,16 @@ import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter;
 import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SshProxyTest {
+class SshProxyTest {
 
 	private static final Logger log = LoggerFactory.getLogger(SshProxyTest.class);
 
@@ -43,24 +45,23 @@ public class SshProxyTest {
 
 	private static final long TEST_TIMEOUT_MILLIS = 30_000L;
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	Path userHome;
 
 	private String oldUserHome;
 	private Path dotSsh;
 
 	private static final String TEST_TEXT = "Hello World";
 
-	@Before
-	public void checkBouncyCastleIsRegistered() {
+	@BeforeAll
+	public static void checkBouncyCastleIsRegistered() {
 		assertThat(SecurityUtils.isBouncyCastleRegistered())
 			.describedAs("BouncyCastle is registered")
 			.isTrue();
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
-		Path userHome = temporaryFolder.getRoot().toPath();
 		oldUserHome = System.getProperty("user.home");
 		System.setProperty("user.home", userHome.toAbsolutePath().toString());
 		log.debug("changed 'user.home' to {}", System.getProperty("user.home"));
@@ -76,13 +77,14 @@ public class SshProxyTest {
 		appendToSshFile(KNOWN_HOSTS_FILENAME, "");
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		System.setProperty("user.home", oldUserHome);
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testSingleHop() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testSingleHop() throws Exception {
 		SshServer sshServer = setUpSshServer();
 		int sshServerPort = sshServer.getPort();
 
@@ -105,8 +107,9 @@ public class SshProxyTest {
 		}
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testSingleHop_EcDsaServer() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testSingleHop_EcDsaServer() throws Exception {
 		SshServer sshServer = setUpSshServer(KeyUtils.EC_ALGORITHM);
 		int sshServerPort = sshServer.getPort();
 
@@ -129,8 +132,9 @@ public class SshProxyTest {
 		}
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testSingleHopWithLocalPort() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testSingleHopWithLocalPort() throws Exception {
 		SshServer sshServer = setUpSshServer();
 		int sshServerPort = sshServer.getPort();
 
@@ -153,13 +157,15 @@ public class SshProxyTest {
 		}
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testTwoHops_ProxyCommand() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testTwoHops_ProxyCommand() throws Exception {
 		doTestTwoHops("ProxyCommand ssh -q -W %h:%p firsthop");
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testTwoHops_ProxyJump() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testTwoHops_ProxyJump() throws Exception {
 		doTestTwoHops("ProxyJump firsthop");
 	}
 
@@ -190,8 +196,9 @@ public class SshProxyTest {
 		}
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testSingleHop_NoHostKeyFound() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testSingleHop_NoHostKeyFound() {
 		try (SshProxy sshProxy = new SshProxy()) {
 			sshProxy.connect("jumphost", "targethost", 1234);
 			fail("SshProxyRuntimeException expected");
@@ -202,8 +209,9 @@ public class SshProxyTest {
 		}
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testSingleHop_ConnectionRefused() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testSingleHop_ConnectionRefused() throws Exception {
 		try (SshServer sshServer = setUpSshServer()) {
 			sshServer.stop();
 			try (SshProxy sshProxy = new SshProxy()) {
@@ -217,8 +225,9 @@ public class SshProxyTest {
 		}
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testSingleHop_IllegalPort() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testSingleHop_IllegalPort() {
 		try (SshProxy sshProxy = new SshProxy()) {
 			sshProxy.connect("localhost", "targethost", 0);
 			fail("IllegalArgumentException expected");
@@ -227,8 +236,9 @@ public class SshProxyTest {
 		}
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testSingleHop_IllegalLocalPort() throws Exception {
+	@Test
+	@Timeout(value = TEST_TIMEOUT_MILLIS,unit = TimeUnit.MILLISECONDS)
+	void testSingleHop_IllegalLocalPort() {
 		try (SshProxy sshProxy = new SshProxy()) {
 			sshProxy.connect("localhost", "targethost", 1234, -1);
 			fail("IllegalArgumentException expected");

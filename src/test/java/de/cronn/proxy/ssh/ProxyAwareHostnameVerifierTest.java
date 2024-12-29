@@ -6,13 +6,13 @@ import static org.mockito.Mockito.*;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ProxyAwareHostnameVerifierTest {
+@ExtendWith(MockitoExtension.class)
+class ProxyAwareHostnameVerifierTest {
 
 	@Mock
 	private HostnameVerifier hostnameVerifier;
@@ -21,7 +21,7 @@ public class ProxyAwareHostnameVerifierTest {
 	private SSLSession session;
 
 	@Test
-	public void shouldInvokeVerifierWithOriginalHost() throws Exception {
+	void shouldInvokeVerifierWithOriginalHost() throws Exception {
 		String originalHost = "originalHost";
 
 		ProxyAwareHostnameVerifier sut = new ProxyAwareHostnameVerifier(hostnameVerifier, originalHost);
