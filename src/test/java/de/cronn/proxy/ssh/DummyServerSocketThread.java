@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DummyServerSocketThread extends Thread implements Closeable {
+public final class DummyServerSocketThread extends Thread implements Closeable {
 
 	private static final Logger log = LoggerFactory.getLogger(DummyServerSocketThread.class);
 	private final Charset transferCharset;
@@ -24,11 +24,11 @@ public class DummyServerSocketThread extends Thread implements Closeable {
 		super(DummyServerSocketThread.class.getSimpleName());
 		this.transferCharset = transferCharset;
 		this.textToSend = textToSend;
-		setDaemon(true);
-		serverSocket = new ServerSocket();
+		this.serverSocket = new ServerSocket();
 		serverSocket.bind(new InetSocketAddress("localhost", 0));
 		log.info("Listening on local port {}", serverSocket.getLocalPort());
-		port = serverSocket.getLocalPort();
+		this.port = serverSocket.getLocalPort();
+		setDaemon(true);
 		start();
 	}
 
