@@ -48,7 +48,7 @@ jacocoTestReport {
 }
 
 wrapper {
-    gradleVersion = "8.13"
+    gradleVersion = "8.14.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 
