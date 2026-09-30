@@ -1,18 +1,7 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-com.google.code.gson:gson:2.13.2=classpath
-com.google.errorprone:error_prone_annotations:2.41.0=classpath
-commons-codec:commons-codec:1.19.0=classpath
-commons-io:commons-io:2.20.0=classpath
-io.github.hakky54:ayza:10.0.2=classpath
-io.github.hakky54:sude:2.0.2=classpath
-org.apache.commons:commons-compress:1.28.0=classpath
-org.apache.commons:commons-lang3:3.20.0=classpath
-org.bouncycastle:bcprov-jdk18on:1.83=classpath
-org.sonarqube:org.sonarqube.gradle.plugin:7.2.2.6593=classpath
-org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:7.2.2.6593=classpath
-org.sonarsource.scanner.lib:sonar-scanner-download-cache:4.0.1.1587=classpath
-org.sonarsource.scanner.lib:sonar-scanner-java-library-batch-interface:4.0.1.1587=classpath
-org.sonarsource.scanner.lib:sonar-scanner-java-library:4.0.1.1587=classpath
+org.sonarqube:org.sonarqube.gradle.plugin:7.5.0.8588=classpath
+org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:7.5.0.8588=classpath
+org.sonarsource.scanner.lib:sonar-scanner-java-library-shaded:4.2.1.1698=classpath
 empty=
