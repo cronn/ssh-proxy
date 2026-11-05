@@ -2,14 +2,14 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 # To regenerate this file, run: ./gradlew :dependencies --write-locks
-ch.qos.logback:logback-classic:1.6.5=testRuntimeClasspath
-ch.qos.logback:logback-core:1.6.5=testRuntimeClasspath
+ch.qos.logback:logback-classic:1.6.6=testRuntimeClasspath
+ch.qos.logback:logback-core:1.6.6=testRuntimeClasspath
 com.jcraft:jsch:0.1.55=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 com.jcraft:jzlib:1.1.3=runtimeClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy-agent:1.17.7=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy:1.18.3=testCompileClasspath,testRuntimeClasspath
-org.apache.sshd:sshd-common:2.20.0=testCompileClasspath,testRuntimeClasspath
-org.apache.sshd:sshd-core:2.20.0=testCompileClasspath,testRuntimeClasspath
+org.apache.sshd:sshd-common:2.20.1=testCompileClasspath,testRuntimeClasspath
+org.apache.sshd:sshd-core:2.20.1=testCompileClasspath,testRuntimeClasspath
 org.apiguardian:apiguardian-api:1.1.2=testCompileClasspath
 org.assertj:assertj-core:3.27.7=testCompileClasspath,testRuntimeClasspath
 org.bouncycastle:bcprov-jdk15on:1.70=testRuntimeClasspath
